@@ -59,6 +59,7 @@ chmod 1777 /rootfs/tmp
 # systemd, locale archives, perl, ...) is implicitly dropped.
 verbatim=(
     /lib /lib64
+    /usr/lib64
     /etc/ld.so.conf /etc/ld.so.conf.d
     /etc/passwd /etc/group /etc/shadow /etc/nsswitch.conf
     /etc/ssl /etc/ca-certificates.conf
