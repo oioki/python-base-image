@@ -31,6 +31,18 @@ src_libdir="/usr/lib/$multiarch"
     find /opt/python -name '*.so*' -not -type d
     ls "$src_libdir"/libnss_*.so*    2>/dev/null || true
     ls "$src_libdir"/libstdc++.so.*  2>/dev/null || true
+    # glibc compatibility stubs — pre-2.34 these were separate libraries,
+    # now everything is in libc.so.6, but third-party wheels routinely
+    # still record DT_NEEDED entries for the legacy SONAMEs. Without
+    # these stubs you get "libpthread.so.0: cannot open shared object"
+    # the moment a wheel like confluent_kafka loads. On arm64 trixie
+    # these don't exist on disk and the globs silently expand to nothing.
+    ls "$src_libdir"/libpthread.so.*  2>/dev/null || true
+    ls "$src_libdir"/libdl.so.*       2>/dev/null || true
+    ls "$src_libdir"/librt.so.*       2>/dev/null || true
+    ls "$src_libdir"/libutil.so.*     2>/dev/null || true
+    ls "$src_libdir"/libresolv.so.*   2>/dev/null || true
+    ls "$src_libdir"/libnsl.so.*      2>/dev/null || true
     find "$src_libdir/gconv" -name '*.so' 2>/dev/null || true
 } | sort -u > /tmp/seeds
 
