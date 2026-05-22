@@ -103,4 +103,14 @@ done < /tmp/keep
 # /opt/python/lib; the multiarch path comes from /etc/ld.so.conf.d/*.conf.)
 ldconfig -r /rootfs
 
+# The upstream python:3.13-slim image builds CPython with --prefix=/usr/local,
+# so /usr/local is baked into the binary as a fallback search path. When this
+# image is used as a base for venvs (e.g. snuba's), pyvenv.cfg records
+# `home = /usr/local/bin` and CPython's getpath logic falls back to
+# /usr/local/lib/python3.13/ when the venv can't satisfy a stdlib lookup.
+# Without this symlink that fallback is a dead end and Python aborts with
+# "Failed to import encodings module".
+mkdir -p /rootfs/usr
+ln -sf /opt/python /rootfs/usr/local
+
 rm -f /tmp/seeds /tmp/keep /tmp/keep.raw
